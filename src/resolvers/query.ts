@@ -1,20 +1,42 @@
-import { notifications } from '../data/notifications';
+import { db } from '../utils/db';
 import { Notification } from '../types/notification';
+import { notifications } from '../data/notifications';
 
 export const Query = {
-  notifications: (limit: number = 10, offset: number = 0): Notification[] => {
-    return notifications.slice(offset, offset + limit);
+  async notifications(limit: number = 10, offset: number = 0): Promise<Notification[]> {
+    try {
+      const result = await db.getAll(limit, offset);
+      return result;
+    } catch (err) {
+      console.warn(' DynamoDB unavailable, using local fallback');
+      return notifications.slice(offset, offset + limit);
+    }
   },
 
-  notification: (id: string): Notification | undefined => {
-    return notifications.find(n => n.id === id);
+  async notification(id: string): Promise<Notification | undefined> {
+    try {
+      return await db.getById(id);
+    } catch (err) {
+      console.warn(' DynamoDB unavailable, using local fallback');
+      return notifications.find((n) => n.id === id);
+    }
   },
 
-  notificationsByUser: (userId: string, limit: number = 10, offset: number = 0): Notification[] => {
-    return notifications.filter(n => n.userId === userId).slice(offset, offset + limit);
+  async notificationsByUser(userId: string, limit: number = 10, offset: number = 0): Promise<Notification[]> {
+    try {
+      return await db.getByUser(userId, limit);
+    } catch (err) {
+      console.warn(' DynamoDB unavailable, using local fallback');
+      return notifications.filter((n) => n.userId === userId).slice(offset, offset + limit);
+    }
   },
 
-  notificationsByBoard: (boardId: string, limit: number = 10, offset: number = 0): Notification[] => {
-    return notifications.filter(n => n.boardId === boardId).slice(offset, offset + limit);
+  async notificationsByBoard(boardId: string, limit: number = 10, offset: number = 0): Promise<Notification[]> {
+    try {
+      return await db.getByBoard(boardId, limit);
+    } catch (err) {
+      console.warn(' DynamoDB unavailable, using local fallback');
+      return notifications.filter((n) => n.boardId === boardId).slice(offset, offset + limit);
+    }
   },
 };
