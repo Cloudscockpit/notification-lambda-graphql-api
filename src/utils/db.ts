@@ -1,30 +1,62 @@
-// import { notifications } from '../data/notifications';
-// import { Notification } from '../types/notification';
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  ScanCommand,
+  GetCommand,
+  PutCommand,
+  DeleteCommand,
+  QueryCommand,
+} from "@aws-sdk/lib-dynamodb";
+import { Notification } from "../types/notification";
 
-// export const db = {
-//   notifications,
+const client = new DynamoDBClient({});
+const docClient = DynamoDBDocumentClient.from(client);
+const TableName = "Notifications";
 
-//   getAll: (limit: number, offset: number): Notification[] =>
-//     notifications.slice(offset, offset + limit),
+export const db = {
+  async getAll(limit = 10, offset = 0): Promise<Notification[]> {
+    const result = await docClient.send(new ScanCommand({ TableName, Limit: limit }));
+    return result.Items as Notification[];
+  },
 
-//   getById: (id: string): Notification | undefined =>
-//     notifications.find((n) => n.id === id),
+  async getById(id: string): Promise<Notification | undefined> {
+    const result = await docClient.send(new GetCommand({ TableName, Key: { id } }));
+    return result.Item as Notification;
+  },
 
-//   getByUser: (userId: string, limit: number, offset: number): Notification[] =>
-//     notifications.filter((n) => n.userId === userId).slice(offset, offset + limit),
+  async getByUser(userId: string, limit = 10): Promise<Notification[]> {
+    const result = await docClient.send(
+      new QueryCommand({
+        TableName,
+        IndexName: "UserIndex", 
+        KeyConditionExpression: "userId = :u",
+        ExpressionAttributeValues: { ":u": userId },
+        Limit: limit,
+      })
+    );
+    return result.Items as Notification[];
+  },
 
-//   getByBoard: (boardId: string, limit: number, offset: number): Notification[] =>
-//     notifications.filter((n) => n.boardId === boardId).slice(offset, offset + limit),
+  async getByBoard(boardId: string, limit = 10): Promise<Notification[]> {
+    const result = await docClient.send(
+      new QueryCommand({
+        TableName,
+        IndexName: "BoardIndex", 
+        KeyConditionExpression: "boardId = :b",
+        ExpressionAttributeValues: { ":b": boardId },
+        Limit: limit,
+      })
+    );
+    return result.Items as Notification[];
+  },
 
-//   add: (notification: Notification): Notification => {
-//     notifications.push(notification);
-//     return notification;
-//   },
+  async create(notification: Notification): Promise<Notification> {
+    await docClient.send(new PutCommand({ TableName, Item: notification }));
+    return notification;
+  },
 
-//   delete: (id: string): boolean => {
-//     const index = notifications.findIndex((n) => n.id === id);
-//     if (index === -1) return false;
-//     notifications.splice(index, 1);
-//     return true;
-//   },
-// };
+  async delete(id: string): Promise<boolean> {
+    await docClient.send(new DeleteCommand({ TableName, Key: { id } }));
+    return true;
+  },
+};
