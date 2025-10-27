@@ -2,3 +2,10 @@ schema {
   query: Query
   mutation: Mutation
 }
+
+type Query {
+  notifications(limit: Int = 10, offset: Int = 0): [Notification!]! // getting all notifications
+  notification(id: ID!): Notification 
+  notificationsByUser(userId: ID!, limit: Int = 10, offset: Int = 0): [Notification!]! 
+  notificationsByBoard(boardId: ID!, limit: Int = 10, offset: Int = 0): [Notification!]! 
+}
