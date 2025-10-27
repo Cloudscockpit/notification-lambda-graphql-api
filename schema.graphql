@@ -9,3 +9,34 @@ type Query {
   notificationsByUser(userId: ID!, limit: Int = 10, offset: Int = 0): [Notification!]! 
   notificationsByBoard(boardId: ID!, limit: Int = 10, offset: Int = 0): [Notification!]! 
 }
+
+type Mutation {
+  createNotification(input: CreateNotificationInput!): Notification!
+  deleteNotification(id: ID!): Boolean!
+  createNotificationForUser(input: CreateForUserInput!): Notification!
+  createNotificationForBoard(input: CreateForBoardInput!): Notification!
+}
+
+type Notification {
+  id: ID!
+  message: String!
+  userId: ID
+  boardId: ID
+  createdAt: String!
+}
+
+input CreateNotificationInput {
+  message: String!
+  userId: ID
+  boardId: ID
+}
+
+input CreateForUserInput {
+  message: String!
+  userId: ID!
+}
+
+input CreateForBoardInput {
+  message: String!
+  boardId: ID!
+}
