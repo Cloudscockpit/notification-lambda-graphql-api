@@ -17,7 +17,7 @@ export interface CreateForUserInput {
   userId: string;
 }
 
-export interface CreateForBoardInput {
-  message: string;
-  boardId: string;
-}
+// export interface CreateForBoardInput {
+//   message: string;
+//   boardId: string;
+// }
