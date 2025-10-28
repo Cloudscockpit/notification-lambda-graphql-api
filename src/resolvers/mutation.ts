@@ -24,7 +24,7 @@ export const Mutation = {
     try {
       await db.create(newNotification);
     } catch (err) {
-      console.warn(' DynamoDB unavailable, using local fallback');
+      console.warn('DynamoDB unavailable, using local fallback');
       notifications.push(newNotification);
     }
 
@@ -35,7 +35,7 @@ export const Mutation = {
     try {
       return await db.delete(id);
     } catch (err) {
-      console.warn(' DynamoDB unavailable, using local fallback');
+      console.warn('DynamoDB unavailable, using local fallback');
       const index = notifications.findIndex((n) => n.id === id);
       if (index !== -1) {
         notifications.splice(index, 1);
@@ -62,7 +62,7 @@ export const Mutation = {
     try {
       await db.create(newNotification);
     } catch (err) {
-      console.warn(' DynamoDB unavailable, using local fallback');
+      console.warn('DynamoDB unavailable, using local fallback');
       notifications.push(newNotification);
     }
 
@@ -86,7 +86,7 @@ export const Mutation = {
     try {
       await db.create(newNotification);
     } catch (err) {
-      console.warn(' DynamoDB unavailable, using local fallback');
+      console.warn('DynamoDB unavailable, using local fallback');
       notifications.push(newNotification);
     }
 
