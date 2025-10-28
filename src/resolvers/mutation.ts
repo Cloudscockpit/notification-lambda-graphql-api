@@ -1,7 +1,8 @@
-import { db } from '../utils/db';
-import { Notification } from '../types/notification';
-import { v4 as uuidv4 } from 'uuid';
-import { notifications } from '../data/notifications'; 
+import { Notification } from "../types/notification";
+import { v4 as uuidv4 } from "uuid";
+import { notifications } from "../data/notifications";
+import { create } from "../utils/db/actions/create";
+import { deleteById } from "../utils/db/actions/delete";
 
 export const Mutation = {
   async createNotification({
@@ -22,9 +23,9 @@ export const Mutation = {
     };
 
     try {
-      await db.create(newNotification);
+      await create(newNotification);
     } catch (err) {
-      console.warn('DynamoDB unavailable, using local fallback');
+      console.warn("DynamoDB unavailable, using local fallback");
       notifications.push(newNotification);
     }
 
@@ -33,9 +34,9 @@ export const Mutation = {
 
   async deleteNotification(id: string): Promise<boolean> {
     try {
-      return await db.delete(id);
+      return await deleteById(id);
     } catch (err) {
-      console.warn('DynamoDB unavailable, using local fallback');
+      console.warn("DynamoDB unavailable, using local fallback");
       const index = notifications.findIndex((n) => n.id === id);
       if (index !== -1) {
         notifications.splice(index, 1);
@@ -60,9 +61,9 @@ export const Mutation = {
     };
 
     try {
-      await db.create(newNotification);
+      await create(newNotification);
     } catch (err) {
-      console.warn('DynamoDB unavailable, using local fallback');
+      console.warn("DynamoDB unavailable, using local fallback");
       notifications.push(newNotification);
     }
 
@@ -84,9 +85,9 @@ export const Mutation = {
     };
 
     try {
-      await db.create(newNotification);
+      await create(newNotification);
     } catch (err) {
-      console.warn('DynamoDB unavailable, using local fallback');
+      console.warn("DynamoDB unavailable, using local fallback");
       notifications.push(newNotification);
     }
 

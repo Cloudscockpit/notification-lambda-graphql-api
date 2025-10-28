@@ -8,19 +8,22 @@ import {
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { Notification } from "../types/notification";
-import { notifications } from "../data/notifications"; 
+import { notifications } from "../data/notifications";
+import { envConfig } from "../config";
 
 const client = new DynamoDBClient({
   region: process.env.AWS_REGION || "us-east-1",
 });
 
 const docClient = DynamoDBDocumentClient.from(client);
-const TableName = process.env.NOTIFICATION_TABLE || "Notifications";
+const TableName = envConfig.notifications || "Notifications";
 
 export const db = {
   async getAll(limit = 10, offset = 0): Promise<Notification[]> {
     try {
-      const result = await docClient.send(new ScanCommand({ TableName, Limit: limit }));
+      const result = await docClient.send(
+        new ScanCommand({ TableName, Limit: limit })
+      );
       return result.Items as Notification[];
     } catch (err) {
       console.warn("Using fake db");
@@ -30,7 +33,9 @@ export const db = {
 
   async getById(id: string): Promise<Notification | undefined> {
     try {
-      const result = await docClient.send(new GetCommand({ TableName, Key: { id } }));
+      const result = await docClient.send(
+        new GetCommand({ TableName, Key: { id } })
+      );
       return result.Item as Notification;
     } catch (err) {
       console.warn("Using fake db");
