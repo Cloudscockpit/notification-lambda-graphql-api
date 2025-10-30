@@ -5,8 +5,14 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
+    "prebuild": "npm run clean",
     "build": "tsc",
-    "start": "ts-node src/index.ts"
+    "clean": "rm -rf dist",
+    "lint": "tsc --noEmit",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "package": "npm run build && zip -r lambda-deployment.zip dist/ node_modules/ package.json",
+    "package:win": "npm run build && powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command \"Compress-Archive -Path dist,node_modules,package.json -DestinationPath lambda-deployment.zip -Force\""
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.917.0",

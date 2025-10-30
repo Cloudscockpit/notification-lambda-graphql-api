@@ -1,6 +1,5 @@
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { docClient, TableName } from "../client";
-import { notifications } from "../../../data/notifications";
 import { Notification } from "../../../types/notification";
 
 export async function getByBoard(
@@ -17,9 +16,11 @@ export async function getByBoard(
         Limit: limit,
       })
     );
+    console.log("✅ Successfully fetched by board from DynamoDB");
     return result.Items as Notification[];
-  } catch {
-    console.warn("Using fake db");
-    return notifications.filter((n) => n.boardId === boardId).slice(0, limit);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("❌ DynamoDB query error:", errorMessage);
+    throw new Error("Failed to fetch by board from database: " + errorMessage);
   }
 }
